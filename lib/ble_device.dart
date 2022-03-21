@@ -4,11 +4,13 @@ import 'package:rxdart/rxdart.dart';
 enum BleStatus { initial, ready }
 
 class BleState {
-  BleStatus status;
-  int pressure;
+  final BleStatus status;
+  final int pressure;
 
-  BleState(this.status, this.pressure);
+  const BleState(this.status, this.pressure);
 }
+
+const initialState = BleState(BleStatus.initial, 0);
 
 class BleDevice {
   StreamController<int> increasePressureController = StreamController();
@@ -27,9 +29,8 @@ class BleDevice {
             }
             return BleState(newStatus, newPressure);
           })
-    ]).scan((state, actionFn, index) => actionFn(state),
-        BleState(BleStatus.initial, 0));
+    ]).scan((state, actionFn, index) => actionFn(state), initialState);
 
-    return stream.startWith(BleState(BleStatus.initial, 0));
+    return stream.startWith(initialState);
   }
 }
