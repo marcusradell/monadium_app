@@ -12,6 +12,15 @@ class BleState {
 
 const initialState = BleState(BleStatus.initial, 0);
 
+increasePressureReducer(int pressure) => (BleState state) {
+      var newPressure = state.pressure + pressure;
+      var newStatus = state.status;
+      if (newPressure > 15) {
+        newStatus = BleStatus.ready;
+      }
+      return BleState(newStatus, newPressure);
+    };
+
 class BleDevice {
   StreamController<int> increasePressureController = StreamController();
 
@@ -20,16 +29,9 @@ class BleDevice {
   }
 
   Stream<BleState> stateStream() {
-    Stream<BleState> stream = MergeStream([
-      increasePressureController.stream.map((pressure) => (BleState state) {
-            var newPressure = state.pressure + pressure;
-            var newStatus = state.status;
-            if (newPressure > 15) {
-              newStatus = BleStatus.ready;
-            }
-            return BleState(newStatus, newPressure);
-          })
-    ]).scan((state, actionFn, index) => actionFn(state), initialState);
+    Stream<BleState> stream = MergeStream(
+            [increasePressureController.stream.map(increasePressureReducer)])
+        .scan((state, actionFn, index) => actionFn(state), initialState);
 
     return stream.startWith(initialState);
   }
