@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:monadium_app/ble_device.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key) {
+    var bleDevice = BleDevice();
+
+    bleDevice.stateStream().listen((state) {
+      print(state.status);
+      print(state.pressure);
+    });
+
+    bleDevice.increasePressure(5);
+    bleDevice.increasePressure(15);
+    bleDevice.increasePressure(1);
+  }
 
   // This widget is the root of your application.
   @override
